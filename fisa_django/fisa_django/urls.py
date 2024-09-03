@@ -17,15 +17,21 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path, include
+# 이미지 업로드 필드를 위한 추가
 from django.conf import settings
 from django.conf.urls.static import static
+from debug_toolbar.toolbar import debug_toolbar_urls
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("blog/", include('blog.urls')), # localhost:8000/blog/실제blog/urls.py에 적힌 경로
-]
-
+    path("blog/", include('blog.urls')),  # locahost:8000/blog/실제blog/urls.py에 적힌 경로
+    #path("account/", include('account.urls')),
+    path("accounts/", include('allauth.urls')),
+    # path("", include('blog.urls')),
+] + debug_toolbar_urls()
+# django_project/urls.py에 추가
 # python -m pip install Pillow
-# 이미지 업로드 필드를 위한 추가
+
+
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

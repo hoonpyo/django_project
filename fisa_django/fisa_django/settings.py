@@ -13,16 +13,18 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 from pathlib import Path
 from django.utils import timezone
 import os
+from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-ei#+6zt%r$ef91l*@b+8^zi7s=+tdm!&@rqgk1m3tebxvk8@))"
+SECRET_KEY = "django-insecure-4@&c)u!*#h40(ir7kd(fexsxj+7uv)h7t12_q9k9+72r!0dkjm"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -40,7 +42,14 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "blog",
-    "board", # 마지막 줄에도 기왕이면 ,를 적어주세요.
+    "board", # 마지막 줄에도 기왕이면 ,를 적어주세요\
+    #"account",
+    'allauth',
+    'allauth.account',
+    'crispy_forms',
+    "crispy_bootstrap5",
+    "debug_toolbar",
+    
 ]
 
 MIDDLEWARE = [
@@ -51,6 +60,8 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = "fisa_django.urls"
@@ -73,17 +84,39 @@ TEMPLATES = [
 
 WSGI_APPLICATION = "fisa_django.wsgi.application"
 
+AUTHENTICATION_BACKENDS = [
+    # Needed to login by username in Django admin, regardless of `allauth`
+    'django.contrib.auth.backends.ModelBackend',
+
+    # `allauth` specific authentication methods, such as login by email
+    'allauth.account.auth_backends.AuthenticationBackend',
+]
+
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     "default": {
+#         "ENGINE": "django.db.backends.sqlite3",
+#         "NAME": BASE_DIR / "db.sqlite3",
+#     }
+# }
+
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
-    }
-}
-
+        "ENGINE": os.getenv('DB_ENGINE'),
+        "NAME": os.getenv('DB_NAME'), # mysql의 scheme랑 일치해야한다.
+        "USER": os.getenv('DB_USER'),
+        "PASSWORD": os.getenv('DB_PASSWORD'),
+        "HOST": os.getenv('DB_HOST'),
+        "PORT": os.getenv('DB_PORT'),
+    },
+     'OPTIONS': {
+             'init_command': "SET sql_mode='STRICT_TRANS_TABLES'" #  MySQL 데이터베이스의 초기 설정 명령어
+         },                                                       # STRICT_TRANS_TABLES: 트랜잭션을 지원하는 테이블, 
+                                                                  # 잘못된 데이터가 삽입되거나 업데이트될 때 경고 대신 오류를 발생
+ }
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
@@ -107,14 +140,12 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
+
+
 # 향후 django app 내에서 현재시각을 사용할 때는 
 # datetime 대신 아래 방식으로 시간을 사용해주세요
-
-
-
 now = timezone.now()
-
-ANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ko-kr"
 
 TIME_ZONE = 'Asia/Seoul'
 
@@ -133,5 +164,19 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, '_media') 
+
+
+# LOGIN_REDIRECT_URL = '/blog/post-list'
+LOGIN_REDIRECT_URL = 'blog_app:post_list'
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+INTERNAL_IPS = [
+    "127.0.0.1",
+    "localhost",
+]

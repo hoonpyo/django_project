@@ -6,8 +6,7 @@ register = template.Library()
 def reverse_string(value):
     return value[::-1]
 
-# @register.filter(name='reverse_string2')
-# def reverse_string(value):
-#     return value[::-1]
 
-# {% load custom_filters %}
+@register.filter(name='reverse_string2')
+def reverse_string(value):
+    return value[::-1]
